@@ -4,21 +4,27 @@
   let chart;
 
   function groupByDay(data) {
-    const map = {};
-    data.forEach(entry => {
-      const date = new Date(entry.time).toISOString().split('T')[0];
-      map[date] = (map[date] || 0) + 1;
-    });
-    return map;
-  }
+  const map = {};
+  data.forEach(entry => {
+    if (!entry.time) return; // تجاهل إذا ما فيه وقت
+    const dateObj = new Date(entry.time);
+    if (isNaN(dateObj)) return; // تجاهل الوقت غير الصالح
+    const date = dateObj.toISOString().split('T')[0];
+    map[date] = (map[date] || 0) + 1;
+  });
+  return map;
+}
+
 
   function groupByIP(data) {
-    const map = {};
-    data.forEach(entry => {
-      map[entry.ip] = (map[entry.ip] || 0) + 1;
-    });
-    return map;
-  }
+  const map = {};
+  data.forEach(entry => {
+    if (!entry.ip) return;
+    map[entry.ip] = (map[entry.ip] || 0) + 1;
+  });
+  return map;
+}
+
 
   function renderChart(groupedData, label) {
     const labels = Object.keys(groupedData);
