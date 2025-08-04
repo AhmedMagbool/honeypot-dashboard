@@ -8,7 +8,8 @@ import http.server
 import socketserver
 import os
 import re
-
+import datetime
+import pytz
 # ------------------------ CONFIGURATION ------------------------ #
 LOG_FILE = "honeypot_logs.txt"
 HOST = "0.0.0.0"
@@ -93,12 +94,16 @@ def send_telegram_alert(ip, port, data, category):
     except Exception as e:
         print(f"[✖] Telegram error: {e}")
 
+
 def send_to_firebase(ip, port, data, category):
+    ksa = pytz.timezone('Asia/Riyadh')
+    ksa_time = datetime.datetime.now(pytz.utc).astimezone(ksa)
+
     payload = {
         "ip": ip,
         "port": port,
         "category": category,
-        "time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "time": ksa_time.strftime('%Y-%m-%d %H:%M:%S'),
         "data": data.strip()
     }
     try:
@@ -112,8 +117,10 @@ def send_to_firebase(ip, port, data, category):
 
 # ------------------------ LOGGING FUNCTION ------------------------ #
 def log_attempt(addr, data):
+    ksa = pytz.timezone('Asia/Riyadh')
+    ksa_time = datetime.datetime.now(pytz.utc).astimezone(ksa)
     category = classify_attack(data)
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp =  ksa_time.strftime('%Y-%m-%d %H:%M:%S')
 
     log = f"[{timestamp}] Connection from {addr[0]}:{addr[1]} - Category: {category} - Data: {data.strip()}"
     print(log)

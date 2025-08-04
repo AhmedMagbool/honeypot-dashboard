@@ -6,25 +6,27 @@
   function groupByDay(data) {
   const map = {};
   data.forEach(entry => {
-    if (!entry.time) return; // تجاهل إذا ما فيه وقت
+    if (!entry.time) return; // تجاهل إذا الوقت غير موجود
+
     const dateObj = new Date(entry.time);
-    if (isNaN(dateObj)) return; // تجاهل الوقت غير الصالح
-    const date = dateObj.toISOString().split('T')[0];
-    map[date] = (map[date] || 0) + 1;
+    if (isNaN(dateObj)) return; // تجاهل إذا التاريخ غير صالح
+
+    dateObj.setHours(dateObj.getHours() + 3); // فرق توقيت السعودية
+    const localDate = dateObj.toISOString().split('T')[0];
+
+    map[localDate] = (map[localDate] || 0) + 1;
   });
   return map;
 }
 
 
   function groupByIP(data) {
-  const map = {};
-  data.forEach(entry => {
-    if (!entry.ip) return;
-    map[entry.ip] = (map[entry.ip] || 0) + 1;
-  });
-  return map;
-}
-
+    const map = {};
+    data.forEach(entry => {
+      map[entry.ip] = (map[entry.ip] || 0) + 1;
+    });
+    return map;
+  }
 
   function renderChart(groupedData, label) {
     const labels = Object.keys(groupedData);
